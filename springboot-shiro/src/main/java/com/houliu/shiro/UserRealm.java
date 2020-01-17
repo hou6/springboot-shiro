@@ -9,7 +9,11 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthenticatingRealm;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.houliu.domain.User;
+import com.houliu.service.UserService;
 
 /**
  * 自定义的realm类
@@ -18,6 +22,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class UserRealm extends AuthorizingRealm {
+	
+	@Autowired
+	private UserService userService;
 
 	/**
 	 * 执行授权逻辑
@@ -34,20 +41,18 @@ public class UserRealm extends AuthorizingRealm {
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken arg0) throws AuthenticationException {
 		System.out.println("执行认证逻辑");
-		//假设数据库的用户名和密码
-		String name = "eric";
-		String password = "123456";
 		/**
 		 * 编写shiro判断逻辑，判断用户名和密码
 		 */
 		//判断用户名
 		UsernamePasswordToken token = (UsernamePasswordToken)arg0;
-		if (!token.getUsername().equals(name)) {
+		User user = userService.findByName(token.getUsername());
+		if (null == user) {
 			//用户名不存在
 			return null;  //shiro底层会抛出UnKnowAccountException
 		}
 		//判断密码
-		return new SimpleAuthenticationInfo("",password,"");
+		return new SimpleAuthenticationInfo("",user.getPassword(),"");
 	}
 
 }

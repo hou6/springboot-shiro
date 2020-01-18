@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
+
 /**
  *   Shiro的配置类
  * @author houliu
@@ -40,10 +42,14 @@ public class ShiroConfig {
 		filterMap.put("/testThymeleaf", "anon");  //表示 /testThymeleaf 这个请求不用认证即可访问
 		//放行login.html
 		filterMap.put("/login", "anon");  //表示 /testThymeleaf 这个请求不用认证即可访问
-		filterMap.put("/*", "authc");   //表示/下的所有资源都使用authc过滤
+		filterMap.put("/add", "perms[user:add]");   //user:add 为自定义的授权字符串
+		filterMap.put("/update", "perms[user:update]");   //user:update 为自定义的授权字符串
+		filterMap.put("/*", "authc");   //表示/下的所有资源都使用authc过滤,这个过滤必须写在最后
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
 		//修改调整的登录页面
 		shiroFilterFactoryBean.setLoginUrl("/toLogin");
+		//设置未授权的提示页面
+		shiroFilterFactoryBean.setUnauthorizedUrl("/noAuth");
 		return shiroFilterFactoryBean;
 	}
 	
@@ -65,6 +71,15 @@ public class ShiroConfig {
 	public UserRealm getRealm() {
 		return new UserRealm();
 	}
+	
+	/**
+	 * 配置ShiroDialect,用于thymeleaf和shiro整合使用
+	 */
+	@Bean
+	public ShiroDialect getShiroDialect() {
+		return new ShiroDialect();
+	}
+	
 	
 
 }

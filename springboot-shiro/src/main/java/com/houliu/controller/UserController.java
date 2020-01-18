@@ -35,6 +35,11 @@ public class UserController {
 		return "/user/add";
 	}
 	
+	@RequestMapping("noAuth")
+	public String noAuth() { 
+		return "noAuth";
+	}
+	
 
 	@RequestMapping("/update")
 	public String update() {
